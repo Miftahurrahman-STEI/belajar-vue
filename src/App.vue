@@ -6,6 +6,7 @@ import ExpressionComponent from './components/ExpressionComponent.vue'
 import Popup from './components/Popup.vue'
 
 import Product from './components/Product.vue'
+import APIGlobal from './components/APIGlobal.vue'
 
 import axios from 'axios'
 
@@ -143,6 +144,7 @@ export default {
   <div v-html="blogPost"></div>
 
   <ExpressionComponent />
+  <APIGlobal />
 </template>
 
 <style>
