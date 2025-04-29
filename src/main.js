@@ -9,7 +9,6 @@ import App from './App.vue'
 
 const app = createApp(App)
 
-
 app.component('CompositionComponent', CompositionComponent)
 app.component('OptionsComponent', OptionsComponent)
 app.component('food-item', FoodItem)

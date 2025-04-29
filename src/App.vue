@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+import './index.css'
+
 import MainButton from './components/MainButton.vue'
 import InterpolateComponent from './components/InterpolateComponent.vue'
 import ExpressionComponent from './components/ExpressionComponent.vue'
@@ -7,6 +9,7 @@ import Popup from './components/Popup.vue'
 
 import Product from './components/Product.vue'
 import APIGlobal from './components/APIGlobal.vue'
+import HandlingUserInput from './components/HandlingUserInput.vue'
 
 import axios from 'axios'
 
@@ -73,16 +76,17 @@ export default {
   },
   methods: {
     receiveEmit() {
-      alert('Hello World!')
+      alert(x.name)
     },
 
     handleAddToCart(product) {
       this.cart.push(product)
+      return this.cart
     },
 
     async goToCheckout() {
       try {
-          const response = await axios.post('http://localhost:5000/api/cart', {
+        const response = await axios.post('http://localhost:5000/api/cart', {
           items: this.cart,
         })
 
@@ -90,11 +94,19 @@ export default {
 
         // Navigasikan ke halaman konfirmasi pembayaran atau reset keranjang
         this.cart = []
-
         alert('Pembayaran berhasil!')
+
       } catch (error) {
         console.error('Checkout gagal:', error)
       }
+    },
+
+    proceedToCheckout() {
+      if (this.cart.length === 0) {
+        alert('Keranjang kosong! Silakan tambahkan produk terlebih dahulu.')
+        return
+      }
+      this.goToCheckout()
     },
   },
 }
@@ -109,22 +121,6 @@ export default {
       @add-to-cart="handleAddToCart"
     />
     <button @click="proceedToCheckout">Lanjutkan Pembayaran</button>
-  </div>
-
-  <h1>Food</h1>
-  <p>
-    Toggle with the 'Favorite' button to emit an event from 'FoodItem.vue' to
-    'App.vue' with the built-in Vue method '$emit()'.
-  </p>
-  <div id="wrapper">
-    <food-item
-      v-for="x in foods"
-      :key="x.name"
-      :food-name="x.name"
-      :food-desc="x.desc"
-      :is-favorite="x.favorite"
-      @toggle-favorite="receiveEmit"
-    />
   </div>
 
   <Popup />
@@ -145,6 +141,10 @@ export default {
 
   <ExpressionComponent />
   <APIGlobal />
+
+  <div>
+    <HandlingUserInput />
+  </div>
 </template>
 
 <style>

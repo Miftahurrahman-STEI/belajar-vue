@@ -13,9 +13,9 @@ const renderIsLoading = () => {
   }
 }
 
-// defineOptions({
-//   name: 'MainButton',
-// })
+defineOptions({
+  name: 'MainButton',
+})
 </script>
 
 <template>

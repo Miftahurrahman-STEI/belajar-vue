@@ -4,7 +4,7 @@
     <div>
       <h3>{{ product.name }}</h3>
       <p>Harga: {{ product.price }}</p>
-      <button @click="addToCart(product)">Tambahkan ke Keranjang</button>
+      <button @click="addToCartAPI(product)">Tambahkan ke Keranjang</button>
     </div>
 
     <button @click="toggleCart">Lihat Keranjang</button>
@@ -57,11 +57,6 @@ export default {
     this.connectWebSocket()
   },
 
-  /**
-   * Hapus event listener saat komponen dihancurkan.
-   * @returns {void}
-   * @description Tutup koneksi WebSocket saat komponen dihancurkan.
-   */
   beforeDestroy() {
     if (this.socket) {
       this.socket.close()
@@ -92,38 +87,30 @@ export default {
       }
     },
 
-    // async addToCart(product) {
-    //   // Kirim data ke backend
-    //   try {
-    //     const response = await axios.post('http://localhost:5000/api/cart', {
-    //       items: [
-    //         {
-    //           id: product.id,
-    //           name: product.name,
-    //           price: product.price,
-    //           quantity: 1,
-    //         },
-    //       ],
-    //     })
+    async addToCartAPI(product) {
+      // Kirim data ke backend
+      try {
+        const response = await axios.post('http://localhost:5000/api/cart', {
+          items: [
+            {
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              quantity: 1,
+            },
+          ],
+        })
 
-    //     console.log('Response POST:', response.data) // Debugging
-    //     alert(response.data.message) // Berikan notifikasi
-    //   } catch (error) {
-    //     console.error(
-    //       'Error saat menambahkan ke keranjang:',
-    //       error.response?.data || error.message,
-    //     )
-    //   }
-    // },
+        console.log('Response POST:', response.data) // Debugging
+        alert(response.data.message) // Berikan notifikasi
+      } catch (error) {
+        console.error(
+          console.error('Error saat menambahkan ke keranjang:',error.response?.data || error.message)
+        )
+      }
+    },
 
-    /**
-     * @param item - Data barang yang akan ditambahkan ke keranjang
-     * @returns {void}
-     * @throws {Error} Jika WebSocket belum terhubung
-     * @description Kirim pesan WebSocket untuk menambahkan barang ke keranjang
-     * dan perbarui data keranjang saat mendapat balasan dari server.
-     */
-    addToCart(item) {
+    addToCartWebsocket(item) {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
         this.socket.send(
           JSON.stringify({
@@ -136,11 +123,6 @@ export default {
       }
     },
 
-    /**
-     * @param {Array} cartItems - Data barang di keranjang
-     * @param {Number} totalItems - Total barang di keranjang
-     * @param {Number} totalPrice - Total harga barang di keranjang
-     */
     updateCart(cartItems, totalItems = null, totalPrice = null) {
       this.cart = cartItems
       this.totalItems =
@@ -149,15 +131,6 @@ export default {
         totalPrice ?? cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     },
 
-    /**
-     * @description Tampilkan atau sembunyikan keranjang
-     * @description dan ambil data keranjang dari backend
-     * @description jika keranjang ditampilkan.
-     * @returns {void}
-     * @throws {Error} Jika gagal mengambil data keranjang
-     * @description Jika keranjang ditampilkan dan kosong,
-     * 
-     */
     async toggleCart() {
       console.log('Toggle Cart diklik')
 
@@ -185,17 +158,11 @@ export default {
       }
     },
 
-    /**
-     * Tambahkan produk ke keranjang.
-     * Ambil data keranjang dari backend.
-     * @returns {void}
-     * @throws {Error} Jika gagal mengambil data keranjang.
-     */
     async getCart() {
       console.log('Memulai request ke backend...')
 
       try {
-        if (!this.showCart) return // Hindari eksekusi jika keranjang tidak terlihat
+        if (!this.showCart) return
         const response = await axios.get('http://localhost:5000/api/cart')
         console.log('Response GET:', response.data)
 
@@ -212,21 +179,14 @@ export default {
       }
     },
 
-    /**
-     * Lanjutkan ke halaman pembayaran.
-     * @returns {void}
-     * @throws {Error} Jika keranjang kosong.
-     */
     async proceedToCheckout() {
       if (this.cart.length === 0) {
         alert('Keranjang kosong! Tambahkan produk terlebih dahulu.')
         return
       }
 
-      // Contoh: Navigasi ke halaman pembayaran
       alert('Melanjutkan ke halaman pembayaran...')
       console.log('Data keranjang:', this.cart)
-      // Implementasikan logika pembayaran di sini
     },
   },
 }
